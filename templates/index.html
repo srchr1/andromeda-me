@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AndromedaME | MEA Technology Ecosystem</title>
+
+    <!-- Browser Tab Icon (Official AndromedaME SVG Favicon) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2309032E'/><path d='M 18 78 C 30 65, 42 42, 47 20 C 47.5 18, 48 18, 48 20 C 45 45, 30 65, 18 78 Z' fill='%23F5F4F6'/><path d='M 82 78 C 70 65, 58 42, 53 20 C 52.5 18, 52 18, 52 20 C 55 45, 70 65, 82 78 Z' fill='%23F5F4F6'/><path d='M 50 42 Q 50 53 61 53 Q 50 53 50 64 Q 50 53 39 53 Q 50 53 50 42 Z' fill='%237A33DF'/></svg>">
+
+    <!-- Tailwind CSS Engine -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'cosmic-navy': '#09032E',
+              'deepspace-purple': '#170644',
+              'andromeda-violet': '#7A33DF',
+              'andromeda-cyan': '#00E5FF',
+              'starlight-white': '#F5F4F6',
+            }
+          }
+        }
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+
+      /* Canvas Background Styling */
+      #constellation-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .glass-card {
+        background: rgba(23, 6, 68, 0.55);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .glass-card:hover {
+        border-color: rgba(122, 51, 223, 0.5);
+        box-shadow: 0 10px 30px -10px rgba(122, 51, 223, 0.3);
+      }
+
+      /* Animated Slow Floating Background Glows */
+      .glow-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.2;
+        pointer-events: none;
+        animation: floatOrb 18s ease-in-out infinite alternate;
+      }
+
+      @keyframes floatOrb {
+        0% { transform: translate(0px, 0px) scale(1); }
+        50% { transform: translate(30px, -40px) scale(1.1); }
+        100% { transform: translate(-20px, 20px) scale(0.95); }
+      }
+
+      .nav-link.active {
+        color: #00E5FF !important;
+        font-weight: 700;
+      }
+    </style>
+</head>
+<body class="bg-cosmic-navy text-starlight-white flex flex-col min-h-screen selection:bg-andromeda-violet selection:text-white relative overflow-x-hidden">
+
+    <!-- Interactive Particle Constellation Canvas -->
+    <canvas id="constellation-canvas"></canvas>
+
+    <!-- Ambient Glow Background Orbs -->
+    <div class="glow-orb w-[500px] h-[500px] bg-andromeda-violet -top-20 -left-20"></div>
+    <div class="glow-orb w-[600px] h-[600px] bg-andromeda-cyan top-[30%] -right-40" style="animation-delay: -5s;"></div>
+    <div class="glow-orb w-[500px] h-[500px] bg-andromeda-violet bottom-10 left-1/3" style="animation-delay: -10s;"></div>
+
+    <!-- Sticky Glass Navbar -->
+    <nav class="border-b border-white/10 bg-cosmic-navy/80 backdrop-blur-xl sticky top-0 z-50 h-20 flex items-center">
+        <div class="max-w-7xl mx-auto px-6 w-full flex justify-between items-center">
+            <!-- Brand Logo -->
+            <a href="#hero" class="nav-link flex items-center gap-2.5 text-2xl font-extrabold tracking-tight group">
+                <svg class="w-8 h-8 text-starlight-white group-hover:scale-105 transition-transform duration-300" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 18 78 C 30 65, 42 42, 47 20 C 47.5 18, 48 18, 48 20 C 45 45, 30 65, 18 78 Z" fill="#F5F4F6"/>
+                    <path d="M 82 78 C 70 65, 58 42, 53 20 C 52.5 18, 52 18, 52 20 C 55 45, 70 65, 82 78 Z" fill="#F5F4F6"/>
+                    <path d="M 50 42 Q 50 53 61 53 Q 50 53 50 64 Q 50 53 39 53 Q 50 53 50 42 Z" fill="#7A33DF"/>
+                </svg>
+                <span>Andromeda<span class="text-transparent bg-clip-text bg-gradient-to-r from-andromeda-violet to-andromeda-cyan">ME</span></span>
+            </a>
+
+            <!-- Desktop Navigation Links -->
+            <div class="hidden md:flex gap-8 text-sm font-semibold text-gray-300">
+                <a href="#about" class="nav-link hover:text-andromeda-cyan transition-colors">About Us</a>
+                <a href="#services" class="nav-link hover:text-andromeda-cyan transition-colors">Services</a>
+                <a href="#partners" class="nav-link hover:text-andromeda-cyan transition-colors">Partners</a>
+                <a href="#faq" class="nav-link hover:text-andromeda-cyan transition-colors">FAQ</a>
+            </div>
+
+            <!-- Desktop Action Buttons -->
+            <div class="hidden md:flex items-center gap-4">
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-xl glass-card text-gray-300 hover:text-andromeda-cyan transition-all" aria-label="LinkedIn">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.77a1.62 1.62 0 1 0 0 3.24 1.62 1.62 0 0 0 0-3.24z"/></svg>
+                </a>
+
+                <a href="#contact" class="nav-link bg-gradient-to-r from-andromeda-violet to-purple-600 hover:opacity-90 text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-andromeda-violet/30 hover:shadow-andromeda-violet/50 hover:-translate-y-0.5">
+                    Connect With Us
+                </a>
+            </div>
+
+            <!-- Mobile Hamburger Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-white focus:outline-none p-2 rounded-xl glass-card" aria-label="Toggle Navigation Menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path id="hamburger-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Drawer Menu -->
+    <div id="mobile-menu" class="hidden md:hidden fixed inset-x-0 top-20 bg-cosmic-navy/95 backdrop-blur-2xl border-b border-white/10 z-40 px-6 py-6 transition-all duration-300">
+        <div class="flex flex-col gap-5 text-base font-semibold">
+            <a href="#about" class="mobile-nav-link text-gray-300 hover:text-andromeda-cyan transition-colors">About Us</a>
+            <a href="#services" class="mobile-nav-link text-gray-300 hover:text-andromeda-cyan transition-colors">Services</a>
+            <a href="#partners" class="mobile-nav-link text-gray-300 hover:text-andromeda-cyan transition-colors">Partners</a>
+            <a href="#faq" class="mobile-nav-link text-gray-300 hover:text-andromeda-cyan transition-colors">FAQ</a>
+            <hr class="border-white/10 my-1">
+            <a href="#contact" class="mobile-nav-link text-center bg-gradient-to-r from-andromeda-violet to-purple-600 text-white font-bold py-3 rounded-xl">Connect With Us</a>
+        </div>
+    </div>
+
+    <!-- SECTION 1: HERO -->
+    <section id="hero" class="py-24 md:py-28 max-w-6xl mx-auto px-6 text-center relative z-10">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card text-andromeda-cyan text-xs font-bold tracking-widest uppercase mb-8 shadow-inner">
+            <svg class="w-3.5 h-3.5 animate-pulse inline-block" viewBox="0 0 100 100" fill="none">
+                <path d="M 18 78 C 30 65, 42 42, 47 20 C 47.5 18, 48 18, 48 20 C 45 45, 30 65, 18 78 Z" fill="#00E5FF"/>
+                <path d="M 82 78 C 70 65, 58 42, 53 20 C 52.5 18, 52 18, 52 20 C 55 45, 70 65, 82 78 Z" fill="#00E5FF"/>
+                <path d="M 50 42 Q 50 53 61 53 Q 50 53 50 64 Q 50 53 39 53 Q 50 53 50 42 Z" fill="#7A33DF"/>
+            </svg>
+            MEA Growth Enablement Platform
+        </div>
+
+        <h1 class="text-4xl sm:text-5xl md:text-7xl font-extrabold text-starlight-white leading-tight max-w-4xl mx-auto tracking-tight">
+            Accelerating Progress Through <span class="text-transparent bg-clip-text bg-gradient-to-r from-andromeda-violet via-purple-400 to-andromeda-cyan">Smart Collaboration</span>
+        </h1>
+
+        <p class="mt-6 text-base md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed font-normal">
+            AndromedaME acts as the strategic layer empowering technology companies and partners to scale seamlessly across the Middle East & Africa.
+        </p>
+
+        <div class="mt-10 flex flex-col sm:flex-row gap-5 justify-center">
+            <a href="#services" class="nav-link bg-gradient-to-r from-andromeda-violet to-purple-600 hover:opacity-90 text-white font-bold px-9 py-4 rounded-xl transition-all shadow-xl shadow-andromeda-violet/30 hover:-translate-y-0.5">
+                Explore Services
+            </a>
+            <a href="#about" class="nav-link glass-card text-starlight-white font-semibold px-9 py-4 rounded-xl transition-all hover:-translate-y-0.5">
+                Learn More
+            </a>
+        </div>
+
+        <!-- IMPACT METRICS BAR -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 p-6 rounded-3xl glass-card max-w-5xl mx-auto mt-20 border border-white/10 shadow-2xl">
+            <div class="text-center p-3">
+                <div class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-andromeda-violet to-andromeda-cyan">6+</div>
+                <div class="text-xs text-gray-400 font-semibold uppercase mt-2 tracking-wider">Ecosystem Partners</div>
+            </div>
+            <div class="text-center p-3 border-l border-white/10">
+                <div class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-andromeda-violet to-andromeda-cyan">2</div>
+                <div class="text-xs text-gray-400 font-semibold uppercase mt-2 tracking-wider">Regional Hubs</div>
+            </div>
+            <div class="text-center p-3 sm:border-l border-white/10">
+                <div class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-andromeda-violet to-andromeda-cyan">4</div>
+                <div class="text-xs text-gray-400 font-semibold uppercase mt-2 tracking-wider">Core Growth Pillars</div>
+            </div>
+            <div class="text-center p-3 border-l border-white/10">
+                <div class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-andromeda-violet to-andromeda-cyan">100%</div>
+                <div class="text-xs text-gray-400 font-semibold uppercase mt-2 tracking-wider">MEA Coverage</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: ABOUT US -->
+    <section id="about" class="py-24 max-w-5xl mx-auto px-6 relative z-10">
+        <div class="text-center max-w-3xl mx-auto">
+            <span class="text-andromeda-cyan font-bold text-xs uppercase tracking-widest">Our Story</span>
+            <h2 class="text-3xl md:text-5xl font-extrabold text-starlight-white mt-2 mb-6">Progress Happens Through Collaboration</h2>
+            <p class="text-gray-300 text-base md:text-lg leading-relaxed">
+                AndromedaME was built on a core foundation: sustainable regional growth across the Middle East & Africa requires deep domain expertise, high-quality execution, and trusted partner networks.
+            </p>
+        </div>
+
+        <div class="mt-20">
+            <h3 class="text-2xl font-bold text-starlight-white text-center mb-10">Founder-Led Leadership</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass-card p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-2xl bg-andromeda-violet/20 border border-andromeda-violet/40 flex items-center justify-center p-2.5 mb-6 shadow-inner">
+                        <svg class="w-full h-full" viewBox="0 0 100 100" fill="none">
+                            <path d="M 18 78 C 30 65, 42 42, 47 20 C 47.5 18, 48 18, 48 20 C 45 45, 30 65, 18 78 Z" fill="#00E5FF"/>
+                            <path d="M 82 78 C 70 65, 58 42, 53 20 C 52.5 18, 52 18, 52 20 C 55 45, 70 65, 82 78 Z" fill="#00E5FF"/>
+                            <path d="M 50 42 Q 50 53 61 53 Q 50 53 50 64 Q 50 53 39 53 Q 50 53 50 42 Z" fill="#7A33DF"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold text-starlight-white">Strategic Advisory</h4>
+                    <p class="text-andromeda-violet text-sm font-semibold mb-3">Co-Founder & Strategic Lead</p>
+                    <p class="text-gray-300 text-sm leading-relaxed">Expertise in digital transformation, growth strategy, and driving high-value enterprise partnerships across MEA.</p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-2xl bg-andromeda-violet/20 border border-andromeda-violet/40 flex items-center justify-center p-2.5 mb-6 shadow-inner">
+                        <svg class="w-full h-full" viewBox="0 0 100 100" fill="none">
+                            <path d="M 18 78 C 30 65, 42 42, 47 20 C 47.5 18, 48 18, 48 20 C 45 45, 30 65, 18 78 Z" fill="#00E5FF"/>
+                            <path d="M 82 78 C 70 65, 58 42, 53 20 C 52.5 18, 52 18, 52 20 C 55 45, 70 65, 82 78 Z" fill="#00E5FF"/>
+                            <path d="M 50 42 Q 50 53 61 53 Q 50 53 50 64 Q 50 53 50 42 Z" fill="#7A33DF"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold text-starlight-white">Operations & Governance</h4>
+                    <p class="text-andromeda-violet text-sm font-semibold mb-3">Co-Founder & Operations Lead</p>
+                    <p class="text-gray-300 text-sm leading-relaxed">Specialized in PMO governance, complex program management, and ecosystem integration leadership.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12 glass-card border border-andromeda-violet/40 text-starlight-white rounded-3xl p-8 md:p-10 text-center relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-andromeda-violet/10 to-transparent pointer-events-none"></div>
+            <h3 class="text-2xl font-bold mb-3 relative z-10">Regional Operational Hubs</h3>
+            <p class="text-gray-300 max-w-xl mx-auto text-base relative z-10">Established presence and network reach across key markets including <span class="text-andromeda-cyan font-bold">Dubai (UAE)</span> and <span class="text-andromeda-cyan font-bold">Amman (Jordan)</span>.</p>
+        </div>
+    </section>
+
+    <!-- SECTION 3: SERVICES -->
+    <section id="services" class="py-24 max-w-6xl mx-auto px-6 relative z-10">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="text-andromeda-cyan font-bold text-xs uppercase tracking-widest">Growth Enablement</span>
+            <h2 class="text-3xl md:text-5xl font-extrabold text-starlight-white mt-2">The 4 Core Service Pillars</h2>
+            <p class="text-gray-300 mt-4 text-base md:text-lg">High-impact B2B consulting, governance, and technology delivery tailored for MEA market expansion.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="glass-card p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1">
+                <span class="text-andromeda-cyan font-bold text-xs uppercase tracking-widest">Pillar 01</span>
+                <h3 class="text-2xl font-bold text-starlight-white mt-2 mb-3">Advisory & Consultancy</h3>
+                <p class="text-gray-300 text-sm leading-relaxed">Strategic guidance, digital transformation, operational improvement, vendor selection, and organizational clarity.</p>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1">
+                <span class="text-andromeda-cyan font-bold text-xs uppercase tracking-widest">Pillar 02</span>
+                <h3 class="text-2xl font-bold text-starlight-white mt-2 mb-3">Project Oversight & PMO</h3>
+                <p class="text-gray-300 text-sm leading-relaxed">Delivery governance, timeline management, quality assurance, escalation handling, and PMO-as-a-service.</p>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1">
+                <span class="text-andromeda-cyan font-bold text-xs uppercase tracking-widest">Pillar 03</span>
+                <h3 class="text-2xl font-bold text-starlight-white mt-2 mb-3">Implementation & Delivery</h3>
+                <p class="text-gray-300 text-sm leading-relaxed">Execution through our partner ecosystem: CRM, automation, HR tech, fintech, cybersecurity, and cloud solutions.</p>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1">
+                <span class="text-andromeda-cyan font-bold text-xs uppercase tracking-widest">Pillar 04</span>
+                <h3 class="text-2xl font-bold text-starlight-white mt-2 mb-3">Sales & Business Development</h3>
+                <p class="text-gray-300 text-sm leading-relaxed">Sales-as-a-Service, pipeline management, lead generation, proposal creation, deal closing, and MEA market access.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: PARTNER ECOSYSTEM -->
+    <section id="partners" class="py-24 max-w-6xl mx-auto px-6 relative z-10">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="text-andromeda-cyan font-bold text-xs uppercase tracking-widest">Ecosystem</span>
+            <h2 class="text-3xl md:text-5xl font-extrabold text-starlight-white mt-2">Partner Ecosystem</h2>
+            <p class="text-gray-300 mt-4 text-base md:text-lg">Our vetted partner network enables high-quality delivery across MEA.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            <div class="glass-card p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col items-center text-center group">
+                <div class="h-20 w-full bg-cosmic-navy/80 rounded-2xl border border-white/5 flex items-center justify-center p-4 mb-6 group-hover:border-andromeda-violet/50 transition-colors">
+                    <svg class="h-10 text-andromeda-cyan stroke-current" viewBox="0 0 200 50" fill="none" stroke-width="2">
+                        <circle cx="30" cy="25" r="14" stroke-dasharray="4 2"/>
+                        <path d="M22 25 L38 25 M30 17 L30 33" stroke-width="3"/>
+                        <text x="55" y="32" fill="#F5F4F6" font-weight="bold" font-size="20" stroke="none">Digitinary</text>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-starlight-white">Digitinary</h3>
+                <span class="mt-2 text-andromeda-violet text-xs font-semibold uppercase tracking-wider">Digital Transformation</span>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col items-center text-center group">
+                <div class="h-20 w-full bg-cosmic-navy/80 rounded-2xl border border-white/5 flex items-center justify-center p-4 mb-6 group-hover:border-andromeda-violet/50 transition-colors">
+                    <svg class="h-10 text-andromeda-cyan fill-current" viewBox="0 0 200 50">
+                        <polygon points="15,38 30,12 45,38"/>
+                        <circle cx="30" cy="25" r="4" fill="#09032E"/>
+                        <text x="58" y="32" fill="#F5F4F6" font-weight="bold" font-size="18">AIS DIGICORE</text>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-starlight-white">AIS Digicore</h3>
+                <span class="mt-2 text-andromeda-violet text-xs font-semibold uppercase tracking-wider">Enterprise Core Tech</span>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col items-center text-center group">
+                <div class="h-20 w-full bg-cosmic-navy/80 rounded-2xl border border-white/5 flex items-center justify-center p-4 mb-6 group-hover:border-andromeda-violet/50 transition-colors">
+                    <svg class="h-10 text-andromeda-cyan" viewBox="0 0 200 50">
+                        <rect x="15" y="15" width="20" height="20" rx="6" fill="#7A33DF"/>
+                        <path d="M20 20 L30 30" stroke="#09032E" stroke-width="3"/>
+                        <text x="48" y="32" fill="#F5F4F6" font-weight="extrabold" font-size="22">fimple</text>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-starlight-white">Fimple</h3>
+                <span class="mt-2 text-andromeda-violet text-xs font-semibold uppercase tracking-wider">Core Banking & FinTech</span>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col items-center text-center group">
+                <div class="h-20 w-full bg-cosmic-navy/80 rounded-2xl border border-white/5 flex items-center justify-center p-4 mb-6 group-hover:border-andromeda-violet/50 transition-colors">
+                    <svg class="h-10 text-andromeda-cyan" viewBox="0 0 200 50">
+                        <circle cx="20" cy="25" r="8" fill="#7A33DF"/>
+                        <circle cx="36" cy="25" r="5" fill="#7A33DF" opacity="0.6"/>
+                        <text x="50" y="32" fill="#F5F4F6" font-weight="bold" font-size="20">KayanHR</text>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-starlight-white">KayanHR</h3>
+                <span class="mt-2 text-andromeda-violet text-xs font-semibold uppercase tracking-wider">HR Tech & Talent</span>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col items-center text-center group">
+                <div class="h-20 w-full bg-cosmic-navy/80 rounded-2xl border border-white/5 flex items-center justify-center p-4 mb-6 group-hover:border-andromeda-violet/50 transition-colors">
+                    <svg class="h-10 fill-current text-andromeda-cyan" viewBox="0 0 200 50">
+                        <path d="M15 25 Q 25 10, 35 25 T 55 25" fill="none" stroke="#00E5FF" stroke-width="4"/>
+                        <text x="65" y="32" fill="#F5F4F6" font-weight="extrabold" font-size="22">ripple</text>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-starlight-white">Ripple</h3>
+                <span class="mt-2 text-andromeda-violet text-xs font-semibold uppercase tracking-wider">Blockchain & Payments</span>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col items-center text-center group">
+                <div class="h-20 w-full bg-cosmic-navy/80 rounded-2xl border border-white/5 flex items-center justify-center p-4 mb-6 group-hover:border-andromeda-violet/50 transition-colors">
+                    <svg class="h-10 text-andromeda-cyan" viewBox="0 0 200 50">
+                        <path d="M15 15 L35 15 L35 35 L15 35 Z" fill="none" stroke="#00E5FF" stroke-width="3"/>
+                        <path d="M25 20 L25 30" stroke="#00E5FF" stroke-width="3"/>
+                        <text x="45" y="32" fill="#F5F4F6" font-weight="bold" font-size="19">Cybercode</text>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-starlight-white">Cybercode</h3>
+                <span class="mt-2 text-andromeda-violet text-xs font-semibold uppercase tracking-wider">Cybersecurity & Risk</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: FAQ ACCORDION -->
+    <section id="faq" class="py-24 max-w-4xl mx-auto px-6 relative z-10">
+        <div class="text-center mb-16">
+            <span class="text-andromeda-cyan font-bold text-xs uppercase tracking-widest">Clear Guidance</span>
+            <h2 class="text-3xl md:text-5xl font-extrabold text-starlight-white mt-2">Frequently Asked Questions</h2>
+            <p class="text-gray-300 mt-3 text-base">Key answers regarding our strategic ecosystem and expansion support.</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="glass-card rounded-2xl p-6 transition-all cursor-pointer faq-item">
+                <div class="flex justify-between items-center faq-header">
+                    <h3 class="text-lg font-bold text-starlight-white">What primary regions does AndromedaME cover?</h3>
+                    <span class="text-andromeda-cyan text-xl font-bold faq-icon transition-transform duration-300">+</span>
+                </div>
+                <div class="faq-answer hidden mt-4 pt-4 border-t border-white/10 text-gray-300 text-sm leading-relaxed">
+                    We specialize in business enablement and expansion across the Middle East & Africa (MEA) region, with core operational hubs in Dubai (UAE) and Amman (Jordan).
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 transition-all cursor-pointer faq-item">
+                <div class="flex justify-between items-center faq-header">
+                    <h3 class="text-lg font-bold text-starlight-white">How does the Partner Ecosystem model work?</h3>
+                    <span class="text-andromeda-cyan text-xl font-bold faq-icon transition-transform duration-300">+</span>
+                </div>
+                <div class="faq-answer hidden mt-4 pt-4 border-t border-white/10 text-gray-300 text-sm leading-relaxed">
+                    AndromedaME acts as the strategic growth layer. We match enterprise requirements with our vetted regional tech partners, providing direct PMO oversight and governance to guarantee successful delivery.
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 transition-all cursor-pointer faq-item">
+                <div class="flex justify-between items-center faq-header">
+                    <h3 class="text-lg font-bold text-starlight-white">What is Sales-as-a-Service for MEA growth?</h3>
+                    <span class="text-andromeda-cyan text-xl font-bold faq-icon transition-transform duration-300">+</span>
+                </div>
+                <div class="faq-answer hidden mt-4 pt-4 border-t border-white/10 text-gray-300 text-sm leading-relaxed">
+                    Our Sales-as-a-Service framework allows international software vendor companies to quickly establish a market presence, build localized pipelines, and close strategic enterprise deals in MEA without high upfront overheads.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 6: CONTACT US -->
+    <section id="contact" class="py-24 max-w-3xl mx-auto px-6 relative z-10">
+        <div class="text-center mb-12">
+            <span class="text-andromeda-cyan font-bold text-xs uppercase tracking-widest">Get in Touch</span>
+            <h2 class="text-3xl md:text-5xl font-extrabold text-starlight-white mt-2">Start a Strategic Conversation</h2>
+            <p class="text-gray-300 mt-3 text-base">Ready to expand your technology footprint in MEA? Connect with our team.</p>
+        </div>
+
+        <div class="glass-card p-8 md:p-10 rounded-3xl shadow-2xl">
+            <form action="https://api.web3forms.com/submit" method="POST" class="space-y-6">
+                <!-- Web3Forms Access Key -->
+                <input type="hidden" name="access_key" value="78119d5b-59fb-445d-8cad-153f71c40bb0">
+
+                <!-- Email Customizations -->
+                <input type="hidden" name="subject" value="New Lead Submission | AndromedaME Website">
+                <input type="hidden" name="from_name" value="AndromedaME Web">
+
+                <!-- Anti-Spam Honeypot -->
+                <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">Full Name</label>
+                    <input type="text" name="name" required class="w-full bg-cosmic-navy/80 border border-white/10 rounded-xl px-4 py-3.5 text-starlight-white focus:outline-none focus:border-andromeda-cyan transition-all" placeholder="e.g. John Doe">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">Work Email</label>
+                    <input type="email" name="email" required class="w-full bg-cosmic-navy/80 border border-white/10 rounded-xl px-4 py-3.5 text-starlight-white focus:outline-none focus:border-andromeda-cyan transition-all" placeholder="john@company.com">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">Company Name</label>
+                    <input type="text" name="company" required class="w-full bg-cosmic-navy/80 border border-white/10 rounded-xl px-4 py-3.5 text-starlight-white focus:outline-none focus:border-andromeda-cyan transition-all" placeholder="Company Ltd.">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">How can we help?</label>
+                    <textarea name="message" rows="4" required class="w-full bg-cosmic-navy/80 border border-white/10 rounded-xl px-4 py-3.5 text-starlight-white focus:outline-none focus:border-andromeda-cyan transition-all" placeholder="Tell us about your expansion or partnership needs..."></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-andromeda-violet to-purple-600 hover:opacity-90 text-white font-bold py-4 rounded-xl transition-all shadow-xl shadow-andromeda-violet/30 hover:shadow-andromeda-violet/50">
+                    Send Message
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="glass-card border-t border-white/10 py-10 text-sm text-gray-400 mt-auto relative z-10">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2.5 text-lg font-bold text-starlight-white">
+                <svg class="w-6 h-6 text-starlight-white" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 18 78 C 30 65, 42 42, 47 20 C 47.5 18, 48 18, 48 20 C 45 45, 30 65, 18 78 Z" fill="#F5F4F6"/>
+                    <path d="M 82 78 C 70 65, 58 42, 53 20 C 52.5 18, 52 18, 52 20 C 55 45, 70 65, 82 78 Z" fill="#F5F4F6"/>
+                    <path d="M 50 42 Q 50 53 61 53 Q 50 53 50 64 Q 50 53 39 53 Q 50 53 50 42 Z" fill="#7A33DF"/>
+                </svg>
+                <span>Andromeda<span class="text-andromeda-cyan">ME</span></span>
+            </div>
+
+            <div class="flex gap-6 text-xs text-gray-400">
+                <a href="privacy.html" class="hover:text-andromeda-cyan transition-colors">Privacy Policy</a>
+                <span>•</span>
+                <a href="terms.html" class="hover:text-andromeda-cyan transition-colors">Terms of Service</a>
+            </div>
+
+            <p>&copy; 2026 AndromedaME. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT ENGINE & CONSTELLATION CANVAS -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+
+        // ==========================================
+        // 1. CONSTELLATION CANVAS ENGINE
+        // ==========================================
+        const canvas = document.getElementById('constellation-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+        const particleCount = 65; // Balanced particle density for maximum smoothness
+        const maxDistance = 150; // Connection distance limit
+
+        // Track cursor location
+        let mouse = {
+          x: null,
+          y: null,
+          radius: 180
+        };
+
+        window.addEventListener('mousemove', function(e) {
+          mouse.x = e.clientX;
+          mouse.y = e.clientY;
+        });
+
+        window.addEventListener('mouseleave', function() {
+          mouse.x = null;
+          mouse.y = null;
+        });
+
+        function resizeCanvas() {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+          constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.vx = (Math.random() - 0.5) * 0.6; // Gentle ambient drift velocity
+            this.vy = (Math.random() - 0.5) * 0.6;
+            this.radius = Math.random() * 2 + 1;
+            // Alternating brand palette colors
+            this.color = Math.random() > 0.4 ? 'rgba(0, 229, 255, ' : 'rgba(122, 51, 223, ';
+            this.baseAlpha = Math.random() * 0.5 + 0.3;
+          }
+
+          update() {
+            this.x += this.vx;
+            this.y += this.vy;
+
+            // Bounce off screen edges
+            if (this.x < 0 || this.x > width) this.vx *= -1;
+            if (this.y < 0 || this.y > height) this.vy *= -1;
+
+            // Slight attraction/reaction to mouse position
+            if (mouse.x !== null && mouse.y !== null) {
+              const dx = mouse.x - this.x;
+              const dy = mouse.y - this.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+
+              if (dist < mouse.radius) {
+                const force = (mouse.radius - dist) / mouse.radius;
+                this.x -= (dx / dist) * force * 1.5;
+                this.y -= (dy / dist) * force * 1.5;
+              }
+            }
+          }
+
+          draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color + this.baseAlpha + ')';
+            ctx.shadowColor = this.color.includes('255') ? '#00E5FF' : '#7A33DF';
+            ctx.shadowBlur = 8;
+            ctx.fill();
+            ctx.shadowBlur = 0; // Reset canvas shadow blur for performance
+          }
+        }
+
+        // Initialize Particles
+        for (let i = 0; i < particleCount; i++) {
+          particles.push(new Particle());
+        }
+
+        function animateConstellation() {
+          ctx.clearRect(0, 0, width, height);
+
+          // Update & render individual particles
+          for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+
+            // Connect nearby particles with dynamic energy line links
+            for (let j = i + 1; j < particles.length; j++) {
+              const dx = particles[i].x - particles[j].x;
+              const dy = particles[i].y - particles[j].y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+
+              if (dist < maxDistance) {
+                const opacity = (1 - dist / maxDistance) * 0.25;
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.strokeStyle = `rgba(122, 51, 223, ${opacity})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+              }
+            }
+
+            // Connect particles directly to the user's cursor
+            if (mouse.x !== null && mouse.y !== null) {
+              const dx = particles[i].x - mouse.x;
+              const dy = particles[i].y - mouse.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+
+              if (dist < mouse.radius) {
+                const opacity = (1 - dist / mouse.radius) * 0.45;
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(mouse.x, mouse.y);
+                ctx.strokeStyle = `rgba(0, 229, 255, ${opacity})`;
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+              }
+            }
+          }
+
+          requestAnimationFrame(animateConstellation);
+        }
+
+        animateConstellation();
+
+        // ==========================================
+        // 2. SMOOTH SCROLL ENGINE
+        // ==========================================
+        const navLinks = document.querySelectorAll('a[href^="#"]');
+
+        function easeInOutCubic(t) {
+          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        function animateScroll(targetPosition, duration) {
+          const startPosition = window.pageYOffset || document.documentElement.scrollTop;
+          const distance = targetPosition - startPosition;
+          let startTime = null;
+
+          function animationStep(currentTime) {
+            if (startTime === null) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const progress = Math.min(timeElapsed / duration, 1);
+            const easeProgress = easeInOutCubic(progress);
+
+            window.scrollTo(0, startPosition + (distance * easeProgress));
+
+            if (timeElapsed < duration) {
+              requestAnimationFrame(animationStep);
+            }
+          }
+
+          requestAnimationFrame(animationStep);
+        }
+
+        navLinks.forEach(link => {
+          link.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+
+            const targetSection = document.querySelector(targetId);
+            if (targetSection) {
+              e.preventDefault();
+
+              if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+              }
+
+              const navHeight = 80;
+              const targetPosition = targetSection.getBoundingClientRect().top + window.pageYOffset - navHeight;
+
+              animateScroll(targetPosition, 800);
+
+              if (history.pushState) {
+                history.pushState(null, null, targetId);
+              }
+            }
+          });
+        });
+
+        // ==========================================
+        // 3. MOBILE MENU DRAWER TOGGLE
+        // ==========================================
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuBtn && mobileMenu) {
+          mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+          });
+        }
+
+        // ==========================================
+        // 4. FAQ ACCORDION ENGINE
+        // ==========================================
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+          item.addEventListener('click', function() {
+            const answer = this.querySelector('.faq-answer');
+            const icon = this.querySelector('.faq-icon');
+
+            const isOpen = !answer.classList.contains('hidden');
+
+            faqItems.forEach(otherItem => {
+              const otherAnswer = otherItem.querySelector('.faq-answer');
+              const otherIcon = otherItem.querySelector('.faq-icon');
+              if (otherAnswer) otherAnswer.classList.add('hidden');
+              if (otherIcon) {
+                otherIcon.textContent = '+';
+                otherIcon.style.transform = 'rotate(0deg)';
+              }
+            });
+
+            if (!isOpen) {
+              answer.classList.remove('hidden');
+              icon.textContent = '−';
+              icon.style.transform = 'rotate(180deg)';
+            }
+          });
+        });
+
+      });
+    </script>
+</body>
+</html>
